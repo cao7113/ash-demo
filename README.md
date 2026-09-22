@@ -1,4 +1,8 @@
-# Demo
+# Ash Demo
+
+Play ash!
+
+## Intro
 
 To start your Phoenix server:
 

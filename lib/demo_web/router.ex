@@ -42,13 +42,19 @@ defmodule DemoWeb.Router do
     end
   end
 
-  if Application.compile_env(:demo, :dev_routes) do
-    import AshAdmin.Router
+  # if Application.compile_env(:demo, :dev_routes) do
+  #   import AshAdmin.Router
+  #   scope "/admin" do
+  #     pipe_through :browser
+  #     ash_admin "/"
+  #   end
+  # end
 
-    scope "/admin" do
-      pipe_through :browser
+  import AshAdmin.Router
 
-      ash_admin "/"
-    end
+  scope "/admin" do
+    pipe_through :browser
+
+    ash_admin "/"
   end
 end
