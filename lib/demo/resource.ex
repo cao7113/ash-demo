@@ -3,6 +3,10 @@ defmodule Demo.Resource do
   defmacro __using__(opts) do
     quote do
       use Ash.Resource, unquote(opts)
+
+      # attributes do
+      #   timestamps()
+      # end
     end
   end
 end
