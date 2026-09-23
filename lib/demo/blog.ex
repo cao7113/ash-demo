@@ -1,11 +1,11 @@
 defmodule Demo.Blog do
   use Ash.Domain, otp_app: :demo, extensions: [AshAdmin.Domain]
 
-  resources do
-    resource(Demo.Blog.Post)
+  admin do
+    show? true
   end
 
-  admin do
-    show?(true)
+  resources do
+    resource Demo.Blog.Post
   end
 end

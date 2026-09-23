@@ -59,7 +59,8 @@ config :spark,
 config :demo,
   ecto_repos: [Demo.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Demo.Blog, Helpdesk.Support]
+  ash_domains: [Demo.Blog, Helpdesk.Support],
+  base_resources: [Demo.Resource]
 
 # Configure the endpoint
 config :demo, DemoWeb.Endpoint,

@@ -2,7 +2,17 @@
 
 Play ash!
 
-## Intro
+## Todo
+
+- postgres & migration
+- admin
+- pagination
+
+- polocy & auth
+- admin auth
+- api
+
+## Get started
 
 To start your Phoenix server:
 
