@@ -55,6 +55,7 @@ config :demo, DemoWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :demo, dev_routes: true, token_signing_secret: "17V9vjmVwq6RSjwie+y/60shl6EaAVH2"
+config :ash_authentication, debug_authentication_failures?: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

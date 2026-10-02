@@ -53,6 +53,39 @@ defmodule DemoWeb.Router do
     )
   end
 
+  scope "/", DemoWeb do
+    pipe_through :browser
+
+    ash_authentication_live_session :authenticated_routes do
+      # in each liveview, add one of the following at the top of the module:
+      #
+      # If an authenticated user must be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_user_required}
+      #
+      # If an authenticated user *may* be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_user_optional}
+      #
+      # If an authenticated user must *not* be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_no_user}
+    end
+  end
+
+  # if Application.compile_env(:demo, :dev_routes) do
+  #   import AshAdmin.Router
+  #   scope "/admin" do
+  #     pipe_through :browser
+  #     ash_admin "/"
+  #   end
+  # end
+
+  import AshAdmin.Router
+
+  scope "/admin" do
+    pipe_through :browser
+
+    ash_admin "/"
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", DemoWeb do
   #   pipe_through :api
@@ -73,38 +106,5 @@ defmodule DemoWeb.Router do
       live_dashboard "/dashboard", metrics: DemoWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
-  end
-
-  # if Application.compile_env(:demo, :dev_routes) do
-  #   import AshAdmin.Router
-  #   scope "/admin" do
-  #     pipe_through :browser
-  #     ash_admin "/"
-  #   end
-  # end
-
-  import AshAdmin.Router
-
-  scope "/", DemoWeb do
-    pipe_through :browser
-
-    ash_authentication_live_session :authenticated_routes do
-      # in each liveview, add one of the following at the top of the module:
-      #
-      # If an authenticated user must be present:
-      # on_mount {DemoWeb.LiveUserAuth, :live_user_required}
-      #
-      # If an authenticated user *may* be present:
-      # on_mount {DemoWeb.LiveUserAuth, :live_user_optional}
-      #
-      # If an authenticated user must *not* be present:
-      # on_mount {DemoWeb.LiveUserAuth, :live_no_user}
-    end
-  end
-
-  scope "/admin" do
-    pipe_through :browser
-
-    ash_admin "/"
   end
 end
