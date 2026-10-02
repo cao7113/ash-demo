@@ -41,6 +41,8 @@ defmodule Demo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:picosat_elixir, "~> 0.2"},
+      {:ash_authentication, "~> 4.0"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:ash_admin, "~> 1.0"},
       {:ash_postgres, "~> 2.0"},
