@@ -7,10 +7,17 @@ Play ash!
 - postgres & migration
 - admin
 - pagination
+- polocy & auth with actor
 
-- polocy & auth
 - admin auth
 - api
+
+## Prompts
+
+demo项目使用了ash_authentication，ash_authentication_phoenix，并使用了ash_admin，
+现在要给项目的/admin 添加认证入口，防止任意访问，怎么做?
+
+相关技术文档：[AshAdmin 管理员认证与授权](docs/admin-authentication.md)
 
 ## Get started
 

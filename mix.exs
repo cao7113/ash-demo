@@ -41,11 +41,9 @@ defmodule Demo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
+      {:picosat_elixir, "~> 0.2"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
-      {:ash_admin, "~> 1.0"},
-      {:ash_postgres, "~> 2.0"},
-      {:ash_phoenix, "~> 2.0"},
-      {:ash, "~> 3.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.8.14"},
       {:phoenix_ecto, "~> 4.5"},
@@ -79,8 +77,30 @@ defmodule Demo.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:ash, "~> 3.0"},
+      {:ash_postgres, "~> 2.0"},
+      {:ash_phoenix, "~> 2.0"},
+      # {:ash_admin, "~> 1.0"},
+      {:ash_authentication_phoenix, "~> 2.0"}
+    ] ++ local_deps()
+  end
+
+  def local_deps do
+    [
+      {:ash_admin, "~> 1.0"}
     ]
+    |> Enum.map(fn dep ->
+      name = elem(dep, 0)
+      local_path = "_local/#{name}"
+
+      if File.exists?(local_path) do
+        IO.puts("# WARNING: Using local #{name} dependency from path: #{local_path}")
+        {name, path: local_path}
+      else
+        dep
+      end
+    end)
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

@@ -1,23 +1,62 @@
 defmodule DemoWeb.Router do
   use DemoWeb, :router
 
+  use AshAuthentication.Phoenix.Router
+
+  import AshAuthentication.Plug.Helpers
+
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {DemoWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, html: {DemoWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+    plug(:load_from_session)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
+    plug(:load_from_bearer)
+    plug(:set_actor, :user)
   end
 
   scope "/", DemoWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :home
+    get("/", PageController, :home)
+    auth_routes(AuthController, Demo.Accounts.User, path: "/auth")
+
+    sign_out_route(AuthController, "/sign-out",
+      overrides: [DemoWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    # Remove these if you'd like to use your own authentication views
+    sign_in_route(
+      register_path: "/register",
+      reset_path: "/reset",
+      auth_routes_prefix: "/auth",
+      on_mount: [{DemoWeb.LiveUserAuth, :live_no_user}],
+      overrides: [DemoWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    # Remove this if you do not want to use the reset password feature
+    reset_route(
+      auth_routes_prefix: "/auth",
+      overrides: [DemoWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    # Remove this if you do not use the confirmation strategy
+    confirm_route(Demo.Accounts.User, :confirm_new_user,
+      auth_routes_prefix: "/auth",
+      overrides: [DemoWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    # Remove this if you do not use the magic link strategy.
+    magic_sign_in_route(Demo.Accounts.User, :magic_link,
+      auth_routes_prefix: "/auth",
+      overrides: [DemoWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
   end
 
   # Other scopes may use custom stacks.
@@ -35,11 +74,49 @@ defmodule DemoWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: DemoWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: DemoWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
+  end
+
+  scope "/", DemoWeb do
+    pipe_through(:browser)
+
+    ash_authentication_live_session :authenticated_routes do
+      # in each liveview, add one of the following at the top of the module:
+      #
+      # If an authenticated user must be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_user_required}
+      #
+      # If an authenticated user *may* be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_user_optional}
+      #
+      # If an authenticated user must *not* be present:
+      # on_mount {DemoWeb.LiveUserAuth, :live_no_user}
+    end
+  end
+
+  scope "/admin" do
+    pipe_through(:browser)
+
+    live_session :ash_admin,
+      on_mount: [
+        {AshAuthentication.Phoenix.LiveSession, :default},
+        {DemoWeb.LiveUserAuth, :admin_required}
+      ],
+      root_layout: {DemoWeb.AdminLayouts, :root},
+      session: {AshAdmin.Router, :__session__, [%{"prefix" => "/"}, []]} do
+      live "//*route", AshAdmin.PageLive, :page,
+        private: %{
+          live_socket_path: "/live",
+          ash_admin_csp_nonce: %{img: nil, style: nil, script: nil}
+        }
+    end
+
+    # import AshAdmin.Router
+    # ash_admin("/")
   end
 
   # if Application.compile_env(:demo, :dev_routes) do
@@ -49,12 +126,4 @@ defmodule DemoWeb.Router do
   #     ash_admin "/"
   #   end
   # end
-
-  import AshAdmin.Router
-
-  scope "/admin" do
-    pipe_through :browser
-
-    ash_admin "/"
-  end
 end

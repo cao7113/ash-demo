@@ -28,11 +28,16 @@ config :ash,
   many_to_many_destroy_destination_on_match?: true,
   known_types: [AshPostgres.Timestamptz, AshPostgres.TimestamptzUsec]
 
+# config :ash_admin, :actor_plug, DemoWeb.AdminActorPlug
+
 config :spark,
   formatter: [
     remove_parens?: true,
     "Ash.Resource": [
       section_order: [
+        :authentication,
+        :token,
+        :user_identity,
         :admin,
         :postgres,
         :resource,
@@ -59,8 +64,9 @@ config :spark,
 config :demo,
   ecto_repos: [Demo.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Demo.Blog, Helpdesk.Support],
-  base_resources: [Demo.Resource]
+  ash_domains: [Demo.Accounts, Demo.Blog, Helpdesk.Support],
+  base_resources: [Demo.Resource],
+  ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 
 # Configure the endpoint
 config :demo, DemoWeb.Endpoint,

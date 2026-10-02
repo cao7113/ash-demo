@@ -54,7 +54,7 @@ config :demo, DemoWeb.Endpoint,
 # different ports.
 
 # Enable dev routes for dashboard and mailbox
-config :demo, dev_routes: true
+config :demo, dev_routes: true, token_signing_secret: "xJkYxVnwiW2v/9BGA1Y4TuAFIHQUEggI"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
