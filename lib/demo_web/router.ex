@@ -4,6 +4,7 @@ defmodule DemoWeb.Router do
   use AshAuthentication.Phoenix.Router
 
   import AshAuthentication.Plug.Helpers
+  import AshAdmin.Router
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -54,6 +55,8 @@ defmodule DemoWeb.Router do
     )
 
     get "/", PageController, :home
+
+    ## Ash Authentication routes
     auth_routes AuthController, Demo.Accounts.User, path: "/auth"
 
     sign_out_route AuthController, "/sign-out",
@@ -99,16 +102,6 @@ defmodule DemoWeb.Router do
       # on_mount {DemoWeb.LiveUserAuth, :live_no_user}
     end
   end
-
-  # if Application.compile_env(:demo, :dev_routes) do
-  #   import AshAdmin.Router
-  #   scope "/admin" do
-  #     pipe_through :browser
-  #     ash_admin "/"
-  #   end
-  # end
-
-  import AshAdmin.Router
 
   scope "/admin" do
     pipe_through :browser
