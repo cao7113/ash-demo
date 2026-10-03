@@ -7,5 +7,9 @@ tasks:
   run: iex --erl "-kernel shell_history enabled" -S mix phx.server
   fmt: mix format
 
+  reset: 
+    mix deps.get
+    mix ecto.reset
+
   setup: |
     mix deps.get
