@@ -42,13 +42,13 @@ defmodule Demo.Accounts.User do
 
       remember_me :remember_me
 
+
       password :password do
         identity_field :email
         hash_provider AshAuthentication.BcryptProvider
 
         resettable do
           sender Demo.Accounts.User.Senders.SendPasswordResetEmail
-
           # these configurations will be the default in a future release
           password_reset_action_name :reset_password_with_token
           request_password_reset_action_name :request_password_reset_token
@@ -59,6 +59,7 @@ defmodule Demo.Accounts.User do
 
   admin do
     actor? true
+
   end
 
   postgres do
@@ -117,6 +118,7 @@ defmodule Demo.Accounts.User do
       run AshAuthentication.Strategy.MagicLink.Request
     end
 
+
     update :change_password do
       # Use this action to allow users to change their password by providing
       # their current password and a new password.
@@ -140,9 +142,11 @@ defmodule Demo.Accounts.User do
       change {AshAuthentication.Strategy.Password.HashPasswordChange, strategy_name: :password}
     end
 
+
     update :set_role do
       accept [:role]
     end
+
 
     read :sign_in_with_password do
       description "Attempt to sign in using a email and password."
@@ -244,6 +248,11 @@ defmodule Demo.Accounts.User do
       run {AshAuthentication.Strategy.Password.RequestPasswordReset, action: :get_by_email}
     end
 
+
+    read :get_by_email do
+      description "Looks up a user by their email"
+      get_by :email
+    end
     update :reset_password_with_token do
       argument :reset_token, :string do
         allow_nil? false

@@ -43,6 +43,7 @@ defmodule Demo.MixProject do
     [
       {:bcrypt_elixir, "~> 3.0"},
       {:picosat_elixir, "~> 0.2"},
+
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.8.14"},
