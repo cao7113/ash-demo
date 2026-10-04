@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+config :ash_admin, :actor_plug, DemoWeb.AshAdminActorPlug
+# config :ash_admin, :actor_plug, DemoWeb.AshAdminActorPlugForked
+
 # These enable behaviors that will become the default in the next major
 # version of Ash. Setting them now opts your application into the new
 # behavior and ensures a seamless upgrade. See the backwards compatibility

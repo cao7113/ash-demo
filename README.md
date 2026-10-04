@@ -2,15 +2,13 @@
 
 Play ash!
 
-## Todo
+## Prompts
 
-- postgres & migration
-- admin
-- pagination
+项目使用的ash框架 ash_authentication，ash_authentication_phoenix，ash_admin，
+actor resource是Demo.Accounts.User，使用ash_authentication做ash_admin验证入口，默认admin布局是左侧显示actor相关信息
+如何定制admin的页面布局，使左侧导航actor处显示当前登录的admin信息
 
-- polocy & auth
-- admin auth
-- api
+相关技术文档：[AshAdmin 管理员认证与授权](docs/admin-authentication.md)
 
 ## Get started
 

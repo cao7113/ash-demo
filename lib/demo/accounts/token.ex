@@ -79,6 +79,10 @@ defmodule Demo.Accounts.Token do
       description "AshAuthentication can interact with the token resource"
       authorize_if always()
     end
+
+    policy always() do
+      authorize_if actor_attribute_equals(:role, :admin)
+    end
   end
 
   attributes do

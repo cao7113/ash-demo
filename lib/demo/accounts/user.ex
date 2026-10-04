@@ -4,7 +4,10 @@ defmodule Demo.Accounts.User do
     domain: Demo.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication]
+    extensions: [AshAuthentication, AshAdmin.Resource],
+    # If you intended to have filters on your primary read action, add `primary_read_warning?: false`
+    # to `use Ash.Resource`. For example: primary_read_warning?: false
+    primary_read_warning?: false
 
   authentication do
     add_ons do
@@ -48,6 +51,12 @@ defmodule Demo.Accounts.User do
     end
   end
 
+  admin do
+    actor? true
+
+    table_columns [:email, :role, :name, :confirmed_at]
+  end
+
   postgres do
     table "users"
     repo Demo.Repo
@@ -61,6 +70,22 @@ defmodule Demo.Accounts.User do
       argument :subject, :string, allow_nil?: false
       get? true
       prepare AshAuthentication.Preparations.FilterBySubject
+    end
+
+    update :set_role do
+      accept [:role]
+    end
+
+    read :me, filter: [id: actor(:id)], primary?: true
+
+    read :by_id do
+      argument :id, :uuid
+
+      filter expr(id == ^arg(:id))
+    end
+
+    read :admins do
+      filter expr(role == :admin)
     end
 
     update :change_password do
@@ -228,6 +253,10 @@ defmodule Demo.Accounts.User do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
     end
+
+    policy always() do
+      authorize_if actor_attribute_equals(:role, :admin)
+    end
   end
 
   attributes do
@@ -235,6 +264,17 @@ defmodule Demo.Accounts.User do
 
     attribute :email, :ci_string do
       allow_nil? false
+      public? true
+    end
+
+    attribute :role, :atom do
+      allow_nil? false
+      default :user
+      constraints one_of: [:user, :admin]
+      public? true
+    end
+
+    attribute :name, :string do
       public? true
     end
 
