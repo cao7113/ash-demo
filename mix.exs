@@ -46,7 +46,6 @@ defmodule Demo.MixProject do
       {:picosat_elixir, "~> 0.2"},
       {:ash_authentication, "~> 4.0"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
-      {:ash_admin, "~> 1.0"},
       {:ash_postgres, "~> 2.0"},
       {:ash_phoenix, "~> 2.0"},
       {:ash, "~> 3.0"},
@@ -84,7 +83,27 @@ defmodule Demo.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"}
+    ] ++ local_deps()
+  end
+
+  def local_deps do
+    local_deps_dir = "_local"
+
+    [
+      # {:ash_admin, "~> 1.0"}
+      {:ash_admin, github: "cao7113/ash_admin", branch: "dev"}
     ]
+    |> Enum.map(fn spec ->
+      name = elem(spec, 0)
+      local_path = Path.join(local_deps_dir, Atom.to_string(name))
+
+      if File.exists?(local_path) do
+        IO.puts("WARNING: using #{name} from #{local_path}...")
+        {name, path: local_path}
+      else
+        spec
+      end
+    end)
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

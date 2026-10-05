@@ -76,11 +76,14 @@ defmodule DemoWeb.Router do
   scope "/admin" do
     pipe_through :browser
 
-    # ash_admin "/"
-
     ash_admin "/",
               AshAuthentication.Phoenix.LiveSession.opts(
-                on_mount: [{DemoWeb.LiveUserAuth, :admin_only}]
+                on_mount: [{DemoWeb.LiveUserAuth, :admin_only}],
+                show_actor_selector: false,
+                sidebar_footer: Demo.AdminSidebarFooter,
+                sidebar_links: [
+                  %{label: "Dashboard", url: "/admin"}
+                ]
               )
   end
 

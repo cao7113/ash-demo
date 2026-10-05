@@ -1,5 +1,6 @@
 defmodule DemoWeb.AshAdminActorPlug do
   # https://ash-admin.hexdocs.pm/getting-started-with-ash-admin.html#security
+  # built-in plug https://github.com/ash-project/ash_admin/blob/v1.3.2/lib/ash_admin/actor_plug/plug.ex
 
   @moduledoc false
   @behaviour AshAdmin.ActorPlug
