@@ -2,6 +2,8 @@
 
 Play ash!
 
+![AshAdmin screenshot](docs/screenshot.png)
+
 ## Prompts
 
 项目使用的ash框架 ash_authentication，ash_authentication_phoenix，ash_admin，
