@@ -9,6 +9,7 @@ env:
   PHX_HOST: ${APP_DOMAIN}
   PORT: ${PORT}
   SECRET_KEY_BASE: mnJfMHh+3rvbbN7o0SUyiwRuqGWAjnPIEWI7lvqqqtzQBWFmsUsfL5Y/8VFbrvrL
+  TOKEN_SIGNING_SECRET: 17V9vjmVwq6RSjwie+y/60shl6EaAVH3
 commands:
   migrate:
     cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/migrate
