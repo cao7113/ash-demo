@@ -14,5 +14,17 @@ commands:
   migrate:
     cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/migrate
     unset_env:
-      - PORT
+      - PORT    
+  dbcreate:
+        cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/eval
+        args:
+            - DbOps.create(:demo)
+        unset_env:
+            - PORT
+  dbdrop:
+      cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/eval
+      args:
+          - DbOps.drop(:demo, confirm: "YES_DELETE_DATABASE")
+      unset_env:
+          - PORT
 idle_timeout: 600s
