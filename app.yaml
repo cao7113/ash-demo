@@ -1,0 +1,17 @@
+name: ash-demo
+domain_suffix: .s
+app_type: phx
+cwd: /Users/rj/dev/elab/ash-demo/_build/prod/_app
+cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/server
+args: []
+env:
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/demo_prod?sslmode=disable
+  PHX_HOST: ${APP_DOMAIN}
+  PORT: ${PORT}
+  SECRET_KEY_BASE: mnJfMHh+3rvbbN7o0SUyiwRuqGWAjnPIEWI7lvqqqtzQBWFmsUsfL5Y/8VFbrvrL
+commands:
+  migrate:
+    cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/migrate
+    unset_env:
+      - PORT
+idle_timeout: 600s
