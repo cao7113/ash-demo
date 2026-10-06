@@ -72,10 +72,6 @@ defmodule Demo.Accounts.User do
       prepare AshAuthentication.Preparations.FilterBySubject
     end
 
-    update :set_role do
-      accept [:role]
-    end
-
     read :me, filter: [id: actor(:id)], primary?: true
 
     read :by_id do
@@ -198,6 +194,12 @@ defmodule Demo.Accounts.User do
         description "A JWT that can be used to authenticate the user."
         allow_nil? false
       end
+    end
+
+    update :set_role do
+      description "Set the role of a user. Only available to admins."
+
+      accept [:role]
     end
 
     action :request_password_reset_token do

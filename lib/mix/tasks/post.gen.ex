@@ -13,6 +13,9 @@ defmodule Mix.Tasks.Post.Gen do
 
   @shortdoc "Generates blog posts"
 
+  # https://mix.hexdocs.pm/1.20.4/Mix.Task.html#module-requirements
+  @requirements ["app.start"]
+
   @impl Mix.Task
   def run(args) do
     {options, positional_args} =
@@ -26,8 +29,6 @@ defmodule Mix.Tasks.Post.Gen do
     end
 
     count = options |> Keyword.get(:count, 10) |> validate_count()
-
-    Mix.Task.run("app.start")
 
     if count > 0 do
       Enum.each(1..count, &create_post/1)

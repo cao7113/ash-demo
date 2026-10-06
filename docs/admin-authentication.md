@@ -113,46 +113,38 @@ authorizing: true
 
 ## 7. 首次创建管理员
 
-迁移完成后，现有用户默认都是普通用户。项目提供 `user.gen` Mix task 创建用户或首个管理员：
+迁移完成后，现有用户默认都是普通用户。项目将创建普通用户与升级管理员拆成两个 Mix task：
 
 ```bash
 mix user.gen --email user@example.com --password "at-least-8-characters"
-mix user.gen -e admin@example.com -p "at-least-8-characters" --admin
-mix user.gen -e admin@example.com -p "at-least-8-characters" -a
+mix admin.gen --email existing@example.com
 ```
 
-该 task：
+`user.gen` 只创建普通用户：
 
 - 复用 `:register_with_password` action，确保密码使用现有 AshAuthentication 逻辑哈希。
-- 默认创建 `:user` 用户；传入 `--admin` 或 `-a` 时设置角色为 `:admin`。
-- 管理员会设置 `confirmed_at`，无需等待邮箱确认即可登录；普通用户继续走正常确认流程。
-- 不会把 `role` 作为公开注册参数暴露。
-- 如果邮箱已存在且未传 `--admin`，task 会直接失败。
-- 如果邮箱已存在且传入 `--admin`，task 会先询问是否升级；确认后使用输入的密码验证现有用户，验证成功才升级角色，不会修改已有密码。
-- 用户已经是管理员时，task 会直接提示，无需重复升级。
+- 新用户默认角色为 `:user`，且不会把 `role` 作为公开注册参数暴露。
+- 邮箱已存在或创建失败时会直接报错。
 
-如果需要提升已有用户，也可以使用 Ash API：
+`admin.gen` 只升级已存在的用户，不需要输入该用户密码。它会要求输入 `Confirm existing@example.com as admin`（将邮箱替换为目标用户邮箱）；确认不匹配时不会更改角色。用户已经是管理员或邮箱不存在时会报错。
+
+上述业务操作也可以直接在 IEx 中调用 `Demo.Accounts`：
 
 ```elixir
-user =
-  Demo.Accounts.User
-  |> Ash.Query.for_read(:get_by_email, %{email: "admin@example.com"})
-  |> Ash.read_one!(domain: Demo.Accounts, authorize?: false)
+{:ok, user} =
+  Demo.Accounts.create_user("user@example.com", "at-least-8-characters")
 
-Ash.update!(user, %{role: :admin},
-  action: :set_role,
-  domain: Demo.Accounts,
-  authorize?: false
-)
+confirmation = Demo.Accounts.admin_upgrade_confirmation("user@example.com")
+Demo.Accounts.promote_to_admin("user@example.com", confirmation)
 ```
 
-可以在 IEx 中执行：
+升级接口同样要求完整确认短语；返回 `{:ok, user}` 表示成功，失败时返回 `{:error, reason}`。启动 IEx：
 
 ```bash
 iex -S mix
 ```
 
-`Demo.Accounts.User` 的 `:set_role` 是资源 action，而不是公开注册参数。正常管理员在 AshAdmin 中修改角色时仍会经过 `Ash.Policy.Authorizer`；只有首次初始化管理员时，运维命令才需要使用 `authorize?: false`。
+`Demo.Accounts.User` 的 `:set_role` 是资源 action，而不是公开注册参数。正常管理员在 AshAdmin 中修改角色时仍会经过 `Ash.Policy.Authorizer`；`Demo.Accounts` 中的管理员初始化函数会使用 `authorize?: false`，因此只能从受信任的服务端代码或运维环境调用，不能暴露给普通用户。
 
 ## 8. 安全边界
 

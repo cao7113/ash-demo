@@ -44,11 +44,17 @@ defmodule DemoWeb.LiveUserAuth do
       if socket.assigns[:current_user].role == :admin do
         {:cont, socket}
       else
+        socket =
+          Phoenix.LiveView.put_flash(
+            socket,
+            :error,
+            "You do not have permission to access that page."
+          )
+
         {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
       end
-
-      # If user isn't logged in, redirect to sign in page
     else
+      # If user isn't logged in, redirect to sign in page
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/sign-in")}
     end
   end
