@@ -1,0 +1,35 @@
+name: ash-demo
+domain_suffix: .s
+app_type: phx
+cwd: /Users/rj/dev/elab/ash-demo/_build/prod/_app
+cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/server
+args: []
+env:
+    DATABASE_URL: postgres://postgres:postgres@localhost:5432/demo_prod?sslmode=disable
+    PHX_HOST: ${APP_DOMAIN}
+    PORT: ${PORT}
+    RELEASE_DISTRIBUTION: name
+    RELEASE_NODE: ash-demo@127.0.0.1
+    RELEASE_COOKIE: cookie
+    SECRET_KEY_BASE: LKzWGWhn+oUNgc0liB7hk46p69othHX5HPkfYRMxJC6HwACCen2FrERoJHVcDud3
+    TOKEN_SIGNING_SECRET: 17V9vjmVwq6RSjwie+y/60shl6EaAVH3
+commands:
+    migrate:
+        cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/migrate
+        unset_env:
+            - PORT
+    dbcreate:
+        cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/demo
+        args:
+            - eval
+            - DbOps.create(:demo)
+        unset_env:
+            - PORT
+    dbdrop:
+        cmd: /Users/rj/dev/elab/ash-demo/_build/prod/_app/bin/demo
+        args:
+            - eval
+            - 'DbOps.drop(:demo, confirm: "YES_DELETE_DATABASE")'
+        unset_env:
+            - PORT
+idle_timeout: 600s

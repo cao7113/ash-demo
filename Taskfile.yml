@@ -9,7 +9,7 @@ tasks:
 
   psql: |
     psql demo_dev
-
+    
   reset: 
     mix deps.get
     mix ecto.reset

@@ -141,8 +141,8 @@ Demo.Accounts.create_user("user@example.com", "at-least-8-characters",
   check_existing?: false
 )
 
-confirmation = Demo.Accounts.admin_upgrade_confirmation("user@example.com")
-Demo.Accounts.upgrade_to_admin("admin@l.h", confirmation)
+confirmation = Demo.Accounts.admin_upgrade_confirmation("admin@l.h")
+Demo.Accounts.upgrade_to_admin("admin@l.h", "Confirm admin@l.h as admin")
 ```
 
 升级接口同样要求完整确认短语；返回 `{:ok, user}` 表示成功，失败时返回 `{:error, reason}`。启动 IEx：
