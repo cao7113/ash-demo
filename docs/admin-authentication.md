@@ -124,18 +124,25 @@ mix admin.gen --email existing@example.com
 
 - 复用 `:register_with_password` action，确保密码使用现有 AshAuthentication 逻辑哈希。
 - 新用户默认角色为 `:user`，且不会把 `role` 作为公开注册参数暴露。
-- 邮箱已存在或创建失败时会直接报错。
+- 默认先查询邮箱是否已存在；已存在或创建失败时会直接报错。`Demo.Accounts.create_user/3` 可通过 `check_existing?: false` 跳过预查询，但数据库唯一约束仍是避免重复邮箱的最终保障。
 
-`admin.gen` 只升级已存在的用户，不需要输入该用户密码。它会要求输入 `Confirm existing@example.com as admin`（将邮箱替换为目标用户邮箱）；确认不匹配时不会更改角色。用户已经是管理员或邮箱不存在时会报错。
+`admin.gen` 只升级已存在的用户，不需要输入该用户密码。目标用户不是管理员时，task 会要求输入 `Confirm existing@example.com as admin`（将邮箱替换为目标用户邮箱）；确认不匹配时不会更改角色。用户已经是管理员时会直接提示，不再要求确认；邮箱不存在时会报错。
 
 上述业务操作也可以直接在 IEx 中调用 `Demo.Accounts`：
 
 ```elixir
+Demo.Accounts.find_user("user@example.com")
+
 {:ok, user} =
   Demo.Accounts.create_user("user@example.com", "at-least-8-characters")
 
+# 可选：跳过创建前的邮箱预查询
+Demo.Accounts.create_user("user@example.com", "at-least-8-characters",
+  check_existing?: false
+)
+
 confirmation = Demo.Accounts.admin_upgrade_confirmation("user@example.com")
-Demo.Accounts.promote_to_admin("user@example.com", confirmation)
+Demo.Accounts.upgrade_to_admin("admin@l.h", confirmation)
 ```
 
 升级接口同样要求完整确认短语；返回 `{:ok, user}` 表示成功，失败时返回 `{:error, reason}`。启动 IEx：

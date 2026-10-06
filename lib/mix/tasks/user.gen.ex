@@ -4,7 +4,7 @@ defmodule Mix.Tasks.User.Gen do
 
   Usage:
 
-      mix user.gen --email user@example.com --password "password"
+      mix user.gen --email/-e user@example.com --password/-p "password"
   """
 
   use Mix.Task
@@ -25,11 +25,14 @@ defmodule Mix.Tasks.User.Gen do
     end
 
     email = required_option(options, :email, "EMAIL")
-    password = required_option(options, :password, "PASSWORD")
+    password = Keyword.get(options, :password, "password")
 
     case Demo.Accounts.create_user(email, password) do
       {:ok, user} ->
         Mix.shell().info("User created: #{user.email}")
+
+      {:error, :already_exists} ->
+        Mix.raise("A user with email #{email} already exists")
 
       {:error, error} ->
         Mix.raise("Could not create user: #{Exception.message(error)}")

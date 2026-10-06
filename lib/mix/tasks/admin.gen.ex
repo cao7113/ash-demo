@@ -1,6 +1,7 @@
 defmodule Mix.Tasks.Admin.Gen do
   @moduledoc """
-  Promotes an existing user to admin after an exact phrase confirmation.
+  Promotes an existing non-admin user after an exact phrase confirmation.
+  Existing admins are reported without prompting.
 
   Usage:
 
@@ -25,33 +26,47 @@ defmodule Mix.Tasks.Admin.Gen do
     end
 
     email = required_option(options, :email, "EMAIL")
-    confirmation = Demo.Accounts.admin_upgrade_confirmation(email)
 
-    confirmed? =
-      case Mix.shell().prompt("Type \"#{confirmation}\" to continue: ") do
-        response when is_binary(response) -> String.trim(response) == confirmation
-        _ -> false
-      end
+    case Demo.Accounts.find_user(email) do
+      {:ok, nil} ->
+        Mix.raise("No user found with email #{email}")
 
-    if confirmed? do
-      case Demo.Accounts.promote_to_admin(email, confirmation) do
-        {:ok, user} ->
-          Mix.shell().info("User upgraded to admin: #{user.email}")
+      {:ok, %{role: :admin}} ->
+        Mix.shell().info("The user is already an admin")
 
-        {:error, :user_not_found} ->
-          Mix.raise("No user found with email #{email}")
+      {:ok, user} ->
+        confirmation = Demo.Accounts.admin_upgrade_confirmation(email)
 
-        {:error, :already_admin} ->
-          Mix.raise("The user is already an admin")
+        confirmed? =
+          case Mix.shell().prompt("Type \"#{confirmation}\" to continue: ") do
+            response when is_binary(response) -> String.trim(response) == confirmation
+            _ -> false
+          end
 
-        {:error, :confirmation_mismatch} ->
+        if confirmed? do
+          upgrade_to_admin(user, confirmation)
+        else
           Mix.raise("Admin upgrade confirmation did not match; upgrade cancelled")
+        end
 
-        {:error, error} ->
-          Mix.raise("Could not upgrade user: #{Exception.message(error)}")
-      end
-    else
-      Mix.raise("Admin upgrade confirmation did not match; upgrade cancelled")
+      {:error, error} ->
+        Mix.raise("Could not find user: #{Exception.message(error)}")
+    end
+  end
+
+  defp upgrade_to_admin(user, confirmation) do
+    case Demo.Accounts.upgrade_to_admin(user, confirmation) do
+      {:ok, user} ->
+        Mix.shell().info("User upgraded to admin: #{user.email}")
+
+      {:error, :already_admin} ->
+        Mix.shell().info("The user is already an admin")
+
+      {:error, {:confirmation_mismatch, reason}} ->
+        Mix.raise("Admin upgrade confirmation did not match; upgrade cancelled: #{reason}")
+
+      {:error, error} ->
+        Mix.raise("Could not upgrade user: #{Exception.message(error)}")
     end
   end
 
