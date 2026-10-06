@@ -19,11 +19,15 @@ config :demo, DemoWeb.Endpoint,
     ]
   ]
 
-# Configure Swoosh API Client
-config :swoosh, api_client: Swoosh.ApiClient.Req
+# # Configure Swoosh API Client
+# config :swoosh, api_client: Swoosh.ApiClient.Req
 
-# Disable Swoosh Local Memory Storage
-config :swoosh, local: false
+# # Disable Swoosh Local Memory Storage
+# config :swoosh, local: false
+
+## NOTE: only for this demo
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false
 
 # Do not print debug messages in production
 config :logger, level: :info
