@@ -8,10 +8,11 @@ env:
     DATABASE_URL: postgres://postgres:postgres@localhost:5432/demo_prod?sslmode=disable
     PHX_HOST: ${APP_DOMAIN}
     PORT: ${PORT}
+    SECRET_KEY_BASE: LKzWGWhn+oUNgc0liB7hk46p69othHX5HPkfYRMxJC6HwACCen2FrERoJHVcDud3
     RELEASE_DISTRIBUTION: name
     RELEASE_NODE: ash-demo@127.0.0.1
     RELEASE_COOKIE: cookie
-    SECRET_KEY_BASE: LKzWGWhn+oUNgc0liB7hk46p69othHX5HPkfYRMxJC6HwACCen2FrERoJHVcDud3
+    # app specific env vars
     TOKEN_SIGNING_SECRET: 17V9vjmVwq6RSjwie+y/60shl6EaAVH3
 commands:
     migrate:
